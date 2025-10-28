@@ -1,61 +1,119 @@
-<p align="center"><a href="https://laravel.com" target="_blank"><img src="https://raw.githubusercontent.com/laravel/art/master/logo-lockup/5%20SVG/2%20CMYK/1%20Full%20Color/laravel-logolockup-cmyk-red.svg" width="400" alt="Laravel Logo"></a></p>
+# Projet Blog Laravel
 
-<p align="center">
-<a href="https://github.com/laravel/framework/actions"><img src="https://github.com/laravel/framework/workflows/tests/badge.svg" alt="Build Status"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/dt/laravel/framework" alt="Total Downloads"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/v/laravel/framework" alt="Latest Stable Version"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/l/laravel/framework" alt="License"></a>
-</p>
+Ce dépôt contient une application Laravel (squelette) adaptée pour un projet simple avec les modèles `User` et `Article`.
 
-## About Laravel
+Résumé rapide
+- Framework : Laravel ^12
+- PHP : >= 8.2
+- Frontend : Vite + Tailwind (dépendances dans `package.json`)
+- Base : migrations, factories et seeders inclus
 
-Laravel is a web application framework with expressive, elegant syntax. We believe development must be an enjoyable and creative experience to be truly fulfilling. Laravel takes the pain out of development by easing common tasks used in many web projects, such as:
+Prérequis
+- PHP >= 8.2
+- Composer
+- Node.js (pour Vite / assets) et npm
+- Une base de données (SQLite, MySQL, Postgres — exemples ci-dessous)
 
-- [Simple, fast routing engine](https://laravel.com/docs/routing).
-- [Powerful dependency injection container](https://laravel.com/docs/container).
-- Multiple back-ends for [session](https://laravel.com/docs/session) and [cache](https://laravel.com/docs/cache) storage.
-- Expressive, intuitive [database ORM](https://laravel.com/docs/eloquent).
-- Database agnostic [schema migrations](https://laravel.com/docs/migrations).
-- [Robust background job processing](https://laravel.com/docs/queues).
-- [Real-time event broadcasting](https://laravel.com/docs/broadcasting).
+Installation (rapide)
+1. Cloner le dépôt
 
-Laravel is accessible, powerful, and provides tools required for large, robust applications.
+```cmd
+git clone <url-du-depot> pooLaravel
+cd pooLaravel
+```
 
-## Learning Laravel
+2. Installer les dépendances PHP et JS, copier l'environnement et générer la clé
 
-Laravel has the most extensive and thorough [documentation](https://laravel.com/docs) and video tutorial library of all modern web application frameworks, making it a breeze to get started with the framework.
+```cmd
+composer install
+copy .env.example .env
+php artisan key:generate
+npm install
+```
 
-You may also try the [Laravel Bootcamp](https://bootcamp.laravel.com), where you will be guided through building a modern Laravel application from scratch.
+Si vous utilisez SQLite :
 
-If you don't feel like reading, [Laracasts](https://laracasts.com) can help. Laracasts contains thousands of video tutorials on a range of topics including Laravel, modern PHP, unit testing, and JavaScript. Boost your skills by digging into our comprehensive video library.
+```cmd
+php -r "file_exists('database/database.sqlite') || copy('database/database.sqlite', 'database/database.sqlite');"
+rem database\database.sqlite
+```
+(la commande ci-dessus crée le fichier sqlite si nécessaire — sous Windows, vous pouvez aussi créer le fichier manuellement)
 
-## Laravel Sponsors
+- Seeders :
+  - `DatabaseSeeder.php` crée au moins un utilisateur de test (`test@example.com`).
+  - `ArticlesTableSeeder.php`
 
-We would like to extend our thanks to the following sponsors for funding Laravel development. If you are interested in becoming a sponsor, please visit the [Laravel Partners program](https://partners.laravel.com).
+Pour migrer et lancer les seeders :
 
-### Premium Partners
+```cmd
+php artisan migrate
+php artisan db:seed
+```
 
-- **[Vehikl](https://vehikl.com)**
-- **[Tighten Co.](https://tighten.co)**
-- **[Kirschbaum Development Group](https://kirschbaumdevelopment.com)**
-- **[64 Robots](https://64robots.com)**
-- **[Curotec](https://www.curotec.com/services/technologies/laravel)**
-- **[DevSquad](https://devsquad.com/hire-laravel-developers)**
-- **[Redberry](https://redberry.international/laravel-development)**
-- **[Active Logic](https://activelogic.com)**
+Structure importante
+- `app/Models/User.php` — modèle utilisateur (Authenticatable). Utilise `HasFactory`.
+- `app/Models/Article.php` — modèle Article avec les attributs `title`, `content`, `user_id` et relation `user()`.
+- `app/Http/Controllers/` — contrôleurs (squelettique, contient `Controller.php`).
+- `resources/views/welcome.blade.php` — vue d'accueil utilisée par la route `/`.
+- `routes/web.php` — route principale : renvoie la vue `welcome`.
+- `database/factories/` — factories pour User et Article.
 
-## Contributing
+Scripts utiles (depuis `composer.json` et `package.json`)
+- Composer :
+  - `composer setup` — script personnalisé qui installe les dépendances, copie `.env`, génère la clé, exécute les migrations et construit les assets (utile pour mise en place automatisée).
+  - `composer dev` — démarre simultanément le serveur artisan, la queue, pail et Vite (via `concurrently`).
+  - `composer test` — nettoie la config et lance les tests (`php artisan test`).
 
-Thank you for considering contributing to the Laravel framework! The contribution guide can be found in the [Laravel documentation](https://laravel.com/docs/contributions).
+- NPM :
+  - `npm run dev` — démarre Vite en dev
+  - `npm run build` — construit les assets pour la production
 
-## Code of Conduct
+Exemples de commandes pour le cycle de développement
 
-In order to ensure that the Laravel community is welcoming to all, please review and abide by the [Code of Conduct](https://laravel.com/docs/contributions#code-of-conduct).
+```cmd
+rem Installer tout
+composer install && npm install
+copy .env.example .env
+php artisan key:generate
 
-## Security Vulnerabilities
+rem Lancer le serveur local (port par défaut 8000)
+php artisan serve
 
-If you discover a security vulnerability within Laravel, please send an e-mail to Taylor Otwell via [taylor@laravel.com](mailto:taylor@laravel.com). All security vulnerabilities will be promptly addressed.
+rem Lancer Vite en développement (assets)
+npm run dev
 
-## License
+rem Exécuter les tests
+composer test
+```
 
-The Laravel framework is open-sourced software licensed under the [MIT license](https://opensource.org/licenses/MIT).
+Points d'attention et notes
+- Le modèle `Article` contient des méthodes d'accès (`getTitleContentAttribute`) et de modification (`setTitleContentAttribute`) personnalisées : elles semblent essayer de gérer le title et le content ensemble. Attention : la signature de `setTitleContentAttribute` telle qu'écrite actuellement prend deux paramètres — cela n'est pas la signature standard attendue par les mutateurs d'Eloquent et pourrait nécessiter une relecture si vous rencontrez des comportements inattendus.
+- `ArticlesTableSeeder.php` est vierge — si vous voulez des articles de test, ajoutez la logique correspondante ou utilisez la factory `ArticleFactory`.
+
+Tests
+- Le projet inclut PHPUnit et des tests d'exemple sous `tests/`.
+- Lancer :
+
+```cmd
+composer test
+```
+
+Déploiement
+- Pour une build de production des assets :
+
+```cmd
+npm run build
+php artisan migrate --force
+```
+
+Comment contribuer
+- Forkez le dépôt, créez une branche feature, puis ouvrez une pull request. Respectez les conventions PSR et lancez les tests avant de proposer la PR.
+
+Licence
+- Projet basé sur le squelette Laravel (MIT). Voir `composer.json` pour la licence des dépendances.
+
+Contact rapide / aide
+- Si vous voulez que je complète le seeder `ArticlesTableSeeder`, corrige le mutateur dans `Article.php` ou que je génère des routes/API pour les articles (index, show, store, update, delete), dis-le-moi et je m'en charge.
+
+---
+Généré automatiquement à partir de l'analyse du dépôt (2025-10-28).
